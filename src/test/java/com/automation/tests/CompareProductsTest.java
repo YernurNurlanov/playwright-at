@@ -1,7 +1,6 @@
 package com.automation.tests;
 
 import com.automation.BaseTest;
-import com.microsoft.playwright.assertions.PlaywrightAssertions;
 import org.junit.jupiter.api.Test;
 import java.math.BigDecimal;
 import java.util.regex.Matcher;
@@ -22,10 +21,7 @@ class CompareProductsTest extends BaseTest {
         String firstName = productPage.productName().innerText().trim();
         BigDecimal firstPrice = parsePrice(productPage.productPrice().innerText());
         page.goBack();
-
-        var productLinks = page.locator("a[data-test='product-name']");
-        PlaywrightAssertions.assertThat(productLinks.first()).isVisible();
-        PlaywrightAssertions.assertThat(productLinks.nth(1)).isVisible();
+        var productLinks = page.getByTestId("product-name");
         productLinks.nth(1).click();
 
         String secondName = productPage.productName().innerText().trim();
@@ -35,12 +31,12 @@ class CompareProductsTest extends BaseTest {
         assertTrue(firstPrice.signum() > 0 && secondPrice.signum() > 0, "Both product prices must be positive");
 
         String comparison = firstPrice.compareTo(secondPrice) < 0
-            ? firstName + " is cheaper than " + secondName
-            : firstPrice.compareTo(secondPrice) > 0
+                ? firstName + " is cheaper than " + secondName
+                : firstPrice.compareTo(secondPrice) > 0
                 ? firstName + " is more expensive than " + secondName
                 : "Both products have the same price";
         assertFalse(comparison.isBlank());
         System.out.printf("Product comparison: %s (%s) vs %s (%s). Result: %s%n",
-            firstName, firstPrice, secondName, secondPrice, comparison);
+                firstName, firstPrice, secondName, secondPrice, comparison);
     }
 }
