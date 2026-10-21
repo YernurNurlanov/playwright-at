@@ -22,6 +22,7 @@ public abstract class BaseTest {
     @BeforeEach
     void setUp() {
         playwright = Playwright.create();
+        playwright.selectors().setTestIdAttribute("data-test");
         browser = playwright.chromium().launch(new BrowserType.LaunchOptions().setHeadless(true));
         context = browser.newContext(new Browser.NewContextOptions().setBaseURL(baseUrl()));
         page = context.newPage();
