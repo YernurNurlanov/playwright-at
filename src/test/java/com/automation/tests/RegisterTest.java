@@ -13,7 +13,6 @@ class RegisterTest extends BaseTest {
         var user = UserFactory.newUser();
         registerPage.register(user);
 
-        // The application may sign the user in directly or redirect to the login page.
         PlaywrightAssertions.assertThat(page).hasURL(java.util.regex.Pattern.compile(".*/(auth/login|account|$).*"));
         assertTrue(page.url().contains("/auth/login") || page.url().contains("/account") || page.url().equals(baseUrl() + "/"),
             "Expected registration to end on login, account, or home page; actual URL: " + page.url());

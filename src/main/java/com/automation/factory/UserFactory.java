@@ -12,7 +12,7 @@ public final class UserFactory {
             "QaTest@" + (stamp % 1_000_000) + "X",
             "1998-05-14",
             "Albania",
-            "10001",
+            "1012",
             "42",
             "Test Street",
             "City",
