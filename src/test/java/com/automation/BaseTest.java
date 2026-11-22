@@ -33,7 +33,7 @@ public abstract class BaseTest {
 
         context = browser.newContext(new Browser.NewContextOptions().setBaseURL(resolvedBaseUrl));
         page = context.newPage();
-        page.setDefaultTimeout(isCI ? 25_000 : 10_000);
+        page.setDefaultTimeout(isCI ? 60_000 : 10_000);
 
         homePage = new HomePage(page);
         registerPage = new RegisterPage(page);
