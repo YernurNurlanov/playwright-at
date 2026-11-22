@@ -25,9 +25,16 @@ public abstract class BaseTest {
         playwright = Playwright.create();
         playwright.selectors().setTestIdAttribute("data-test");
         browser = playwright.chromium().launch(new BrowserType.LaunchOptions().setHeadless(true));
-        context = browser.newContext(new Browser.NewContextOptions().setBaseURL(baseUrl()));
+
+        String resolvedBaseUrl = baseUrl();
+        if (isCI) {
+            System.out.println("[CI] Using baseURL: " + resolvedBaseUrl);
+        }
+
+        context = browser.newContext(new Browser.NewContextOptions().setBaseURL(resolvedBaseUrl));
         page = context.newPage();
-        page.setDefaultTimeout(isCI ? 30_000 : 10_000);
+        page.setDefaultTimeout(isCI ? 25_000 : 10_000);
+
         homePage = new HomePage(page);
         registerPage = new RegisterPage(page);
         loginPage = new LoginPage(page);
@@ -48,6 +55,12 @@ public abstract class BaseTest {
 
     @AfterEach
     void tearDown() {
+        if (page != null && isCI) {
+            try {
+                System.out.println("[CI] Final page URL: " + page.url() + " | Title: " + page.title());
+            } catch (Exception ignored) {
+            }
+        }
         if (context != null) context.close();
         if (browser != null) browser.close();
         if (playwright != null) playwright.close();
