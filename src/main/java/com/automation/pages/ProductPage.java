@@ -2,7 +2,6 @@ package com.automation.pages;
 
 import com.microsoft.playwright.Page;
 import com.microsoft.playwright.Locator;
-import com.microsoft.playwright.options.AriaRole;
 
 public class ProductPage extends BasePage {
     public ProductPage(Page page) { super(page); }
@@ -20,6 +19,8 @@ public class ProductPage extends BasePage {
     }
 
     public void addToCart() {
-        page.getByRole(AriaRole.BUTTON, new Page.GetByRoleOptions().setName("Add to cart")).click();
+        Locator addToCartBtn = page.getByTestId("add-to-cart");
+        addToCartBtn.waitFor(new Locator.WaitForOptions().setState(com.microsoft.playwright.options.WaitForSelectorState.VISIBLE));
+        addToCartBtn.click();
     }
 }

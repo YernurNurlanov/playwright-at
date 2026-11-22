@@ -1,0 +1,71 @@
+name: Playwright Java CI
+
+on:
+  push:
+    branches: [ "**"]
+  pull_request:
+    branches: [ main, master ]
+  workflow_dispatch:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  test:
+    name: Run Playwright Tests (Shard ${{ matrix.testGroup }})
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    strategy:
+      fail-fast: false
+      matrix:
+        testGroup: [ 'RegisterAndLogin', 'ProductAndCompare', 'ResetPassword' ]
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-java@v4
+        with:
+          java-version: '23'
+          distribution: 'temurin'
+          cache: 'maven'
+
+      - name: Compile test classes
+        run: mvn test-compile
+
+      - name: Install Playwright Browsers & Dependencies
+        run: mvn exec:java -Dexec.mainClass="com.microsoft.playwright.CLI" -Dexec.args="install --with-deps"
+
+      - name: Run Playwright Tests
+        run: |
+          case "${{ matrix.testGroup }}" in
+            RegisterAndLogin)
+              mvn test -Dtest=RegisterTest,LoginTest
+              ;;
+            ProductAndCompare)
+              mvn test -Dtest=CompareProductsTest,BuyProductTest
+              ;;
+            ResetPassword)
+              mvn test -Dtest=ResetPasswordTest
+              ;;
+          esac
+        env:
+          CI: "true"
+
+      - name: Upload Surefire JUnit Reports
+        if: ${{ !cancelled() }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: junit-report-${{ matrix.testGroup }}
+          path: target/surefire-reports/
+          retention-days: 14
+
+      - name: Upload Test Artifacts (Traces & Screenshots)
+        if: ${{ !cancelled() }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-artifacts-${{ matrix.testGroup }}
+          path: |
+            test-results/
+            target/
+          retention-days: 14
