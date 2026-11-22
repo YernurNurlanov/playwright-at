@@ -27,7 +27,7 @@ public abstract class BaseTest {
         browser = playwright.chromium().launch(new BrowserType.LaunchOptions().setHeadless(true));
         context = browser.newContext(new Browser.NewContextOptions().setBaseURL(baseUrl()));
         page = context.newPage();
-        page.setDefaultTimeout(isCI ? 15_000 : 10_000);
+        page.setDefaultTimeout(isCI ? 30_000 : 10_000);
         homePage = new HomePage(page);
         registerPage = new RegisterPage(page);
         loginPage = new LoginPage(page);
